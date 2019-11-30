@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="popup.css">
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <img src='./images/62861-blue-book-icon72.png' id='logo' style="vertical-align: middle;">
+    </div>
+    <h1>DumpItBlue+</h1>
+    <fieldset>
+      <legend>Current Profile ID</legend>
+      <div style="text-align: center; margin-bottom: 10px;"><input type="text" name="fbid" id="fbid"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Functions</legend>
+      <details>
+        <summary>Scrolling</summary>
+        <div style="margin-top: 10px;">
+          <label>Scroll type:</label>
+          <select class="soflow" name="scrollType" id="scrollType" style="margin-left: 5px; width: 180px;">
+            <option value="page" id="toBottom">Page to bottom</option>
+            <option value="chat" id="chat">Messenger current chat</option>
+            <option value="contact" id="contacts">Messenger contacts</option>
+            <option value="chatMobile" id="fbMobile">Facebook&#8482; Mobile chat</option>
+          </select>
+        </div>
+        <div>
+          <label>Limit:</label>
+          <select name="scrollLimit" class="soflow" id="scrollLimit" style="margin-left: 36px; width: 90px;">
+            <option value="noLimit">No limit</option>
+            <option value="count">Count</option>
+            <option value="date">On date</option>
+          </select>
+          <input type="number" id="scrollLimitCountVal" min="1" max="100" step="1" value ="1" style="margin-left: 5px; display:none;"/>
+          <input type="date" name="scrollLimitDate" id="scrollLimitDateVal" style="margin-left: 5px; display:none;"/>
+        </div>
+      <div style="text-align: center"><button id="scroll" class="spec">Scroll</button> <button id="scrollStop" class="spec">Stop</button></div>
+      </details>
+    <details>
+        <summary>Expanding</summary>
+        <div style="margin-top: 10px;">
+          <label class="container">See more
+            <input type="checkbox" id="SeeMore">
+            <span class="checkmark"></span>
+          </label>
+          <label class="container">Comments/replies
+            <input type="checkbox" id="Comments">
+            <span class="checkmark"></span>
+          </label>
+          <label class="container">More posts
+            <input type="checkbox" id="Posts">
+            <span class="checkmark"></span>
+          </label>
+          </div>
+          <div style="text-align: center"><button id="expand">Expand</button></div>
+    </details>
+    <details>
+        <summary>Removing</summary>
+          <div style="margin-top: 10px;">
+            <label class="container">Blue bar
+              <input type="checkbox" id="remBluebar">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Comments
+              <input type="checkbox" id="remComments">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Write Comment Boxes
+              <input type="checkbox" id="remCommentBox">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Like bubbles in comments
+              <input type="checkbox" id="remLikesInCom">
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <div style="text-align: center"><button id="remove">Remove</button></div>
+    </details>
+    <details>
+        <summary>Isolate scrollable</summary>
+          <div style="margin-top: 10px;">
+            <label style="font-size: 14px; color: black">Profile type:</label>
+            <select class="soflow" name="profileType" id="profileType" style="margin-left: 5px; width: 180px;">
+              <option value="people" id="people">People</option>
+              <option value="page" id="page">Page</option>
+              <option value="group" id="group">Group</option>
+              <option value="event" id="event">Event</option>
+              <option value="messenger" id="messenger">Messenger current chat</option>
+              <option value="messContacts" id="messContacts">Messenger contacts</option>
+            </select>
+            <label class="container">Open print dialog box
+              <input type="checkbox" id="print">
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <div style="text-align: center"><button id="isolate">Isolate</button></div>
+    </details>
+    <details>
+        <summary>Others</summary>
+        <div style="margin-top: 10px;">
+          <div style="text-align: center">
+            <button id="datetime" style="margin-bottom: 5px; width: 120px;">Show datetime</button>
+            <button id="translate" style="margin-bottom: 5px; width: 100px; margin-left: 5px;">Translate</button>
+          </div>
+          <div style="text-align: center"><button id="openMobile" style="margin-bottom: 5px; width: 225px;">Open chat in Facebook&#8482; Mobile</button></div>
+          <div style="text-align: center"><button id="disableImages" style="width: 225px;">Disable images</button></div>
+        </div>
+    </details>
+    </fieldset>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "DumpItBlue+",
+  "version": "1.3",
+  "description": "Complement to DumpItBlue tool",
+  "permissions": ["contentSettings", "activeTab", "tabs", "storage", "https://*.facebook.com/"],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/62861-blue-book-icon16.png",
+      "32": "images/62861-blue-book-icon32.png",
+      "48": "images/62861-blue-book-icon48.png",
+      "128": "images/62861-blue-book-icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/62861-blue-book-icon16.png",
+    "32": "images/62861-blue-book-icon32.png",
+    "48": "images/62861-blue-book-icon48.png",
+    "128": "images/62861-blue-book-icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.facebook.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "manifest_version": 2
+}
