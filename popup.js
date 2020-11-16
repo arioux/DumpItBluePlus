@@ -157,7 +157,10 @@ document.getElementById('openMobile').addEventListener('click', function() {
       var fbid = document.getElementById('fbid').value;
       if (fbid && fbid != "No ID found!" && fbid != "Not on Facebook!") {
         chrome.storage.local.set({ 'FBID': fbid });
-        chrome.tabs.create({ url: 'https://m.facebook.com/messages' });
+		var urlAddr = 'https://m.facebook.com/messages';
+        var oldUI = document.getElementById('pagelet_bluebar');
+        if (!oldUI) { urlAddr += '/?entrypoint=jewel&no_hist=1'; }
+        chrome.tabs.create({ url: urlAddr });
       }
     }
   });
