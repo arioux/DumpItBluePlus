@@ -10,29 +10,30 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
   } else if (request.type == "expand") {
     console.log('expanding');
     if (oldUI) { expandFunctionsOld(); }
-	else       { expandFunctionsNew(); }
+    else       { expandFunctionsNew(); }
     sendResponse({msg: "expanding started"});
   } else if (request.type == "remove") {
     console.log('removing');
     if (oldUI) { removeOld(); }
-	else       { removeNew(); }
+    else       { removeNew(); }
     sendResponse({msg: "removing started"});
   } else if (request.type == "isolate") {
-	if (oldUI) { 
+    //if (oldUI) {
       console.log('isolating');
-      isolate();
+      if (oldUI) { isolateOld(); }
+      else       { isolateNew(); }
       sendResponse({msg: "isolating started"});
-	} else { alert('This function does not actually work with the new interface.'); }
+    //} else { alert('This function does not actually work with the new interface.'); }
   } else if (request.type == "datetime") {
-	if (oldUI) { 
+    if (oldUI) { 
       console.log('datetime');
       datetime();
       sendResponse({msg: "Show datetime started"});
-	} else { alert('This function does not actually work with the new interface.'); }
+    } else { alert('This function does not actually work with the new interface.'); }
   } else if (request.type == "translate") {
     console.log('translating');
     if (oldUI) { translateOld(); }
-	else       { translateNew(); }
+    else       { translateNew(); }
     sendResponse({msg: "Translating started"});
   } else if (request.type == "openMobile") {
     console.log('Open in Facebook Mobile');
@@ -246,30 +247,23 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
       // messenger (id of the current chat)
       regex = new RegExp('https://www.facebook.com/messages/t');
       if (currUrl && regex.test(currUrl)) {
-        var currUrl = location.href;
-        var regex = /\/t\/([^\?]+)/;
-        var match = currUrl.match(regex);
-        var userID;
-        if (match && match.length > 0) { userID = match[1]; }
-        var re1 = new RegExp("\.\{500\}\\b"+userID+"\\b");
-        var re2 = new RegExp("direct_nav_id");
-        var scripts = document.getElementsByTagName("SCRIPT");
-        for (var i = 0; i < scripts.length; i++) {
-          var matchRE1 = scripts[i].innerHTML.match(re1);
-          var matchRE2 = scripts[i].innerHTML.match(re2);  
-          if (matchRE1 && matchRE1.length > 0 && matchRE2 && matchRE2.length > 0) {
-            var matchRE3 = matchRE1[0].match(/direct_nav_id\\\"\:(\d+)/);
-            if (matchRE3 && matchRE3.length > 0) { fbid = matchRE3[1]; break; }
-          }
+		var iframe = document.getElementsByTagName('iframe')[0];
+		var innerDoc;
+		if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+		else        { innerDoc = document; }
+		var div = innerDoc.getElementsByClassName('_3oh-');
+        for (var i = 0; i < div.length; i++) {
+          var matchRE = div[i].innerHTML.match(/uid=\"(\d+)\"/);
+          if (matchRE && matchRE.length > 0) { fbid = matchRE[1]; break; }
         }
         chrome.storage.local.set({ 'PROF_TYPE': 'messenger' });
         console.log('pageType=messenger');
       }
       // groups
-      var regex = /group\/\?id\=(\d+)/i;
-      var metas = document.getElementsByTagName("META");
-      for (var i = 0; i < metas.length; i++) {
-        var match = metas[i].getAttribute("content").match(regex);
+      var regex = /\"groupID\"\:\"(\d+)\"/i;
+      var scripts = document.getElementsByTagName("SCRIPT");
+      for (var i = 0; i < scripts.length; i++) {
+        var match = scripts[i].innerHTML.match(regex);
         if (match && match.length > 0) {
           fbid = match[1];
           chrome.storage.local.set({ 'PROF_TYPE': 'group' });
@@ -367,7 +361,7 @@ function scrollFunctions() {
       } else if (items.SCROLL_LIMIT_TYPE == 'date' ) { // Until it reaches a specific date
         var oldUI = document.getElementById('pagelet_bluebar');
         if (oldUI) { scrollPageByDateOld(items.SCROLL_LIMIT_VAL); }
-		else       { scrollPageByDateNew(items.SCROLL_LIMIT_VAL); }
+        else       { scrollPageByDateNew(items.SCROLL_LIMIT_VAL); }
       } else {                                         // No limit
         scrollPageNoLimit();
       }
@@ -377,10 +371,14 @@ function scrollFunctions() {
 
 // Scroll conversation by count
 async function scrollChatByCount(countVal) {
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
   var scrollState = true;
   var i = 0;
   while (i < countVal && scrollState == true) {
-    var scrollingDiv = (document.getElementsByClassName('_2k8v'))[0];
+    var scrollingDiv = (innerDoc.getElementsByClassName('_2k8v'))[0];
     if (scrollingDiv) { scrollingDiv.scrollIntoView(true); }
     else { break; }
     await sleep(1000);
@@ -394,18 +392,23 @@ async function scrollChatByCount(countVal) {
 
 // Scroll conversation by date
 async function scrollChatByDate(stopDate) {
-  var allDates = document.querySelectorAll("time._3oh-");
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
+  var allDates = innerDoc.querySelectorAll("time._3oh-");
   if (allDates.length) {
     var lastDisplayedDate = allDates[0].innerHTML;
     var date1 = new Date(lastDisplayedDate);
     var date2 = new Date(stopDate);
     var scrollState = true;
     while (date1 > date2 && scrollState == true) {
-      var scrollingDiv = (document.getElementsByClassName('_2k8v'))[0];
+      var scrollingDiv = (innerDoc.getElementsByClassName('_2k8v'))[0];
       if (scrollingDiv) { scrollingDiv.scrollIntoView(true); }
       else { break; }
       await sleep(1000);
-      lastDisplayedDate = document.querySelectorAll("time._3oh-")[0].innerHTML;
+      lastDisplayedDate = innerDoc.querySelectorAll("time._3oh-")[0].innerHTML;
+	  console.log(lastDisplayedDate);
       date1 = new Date(lastDisplayedDate);
       chrome.storage.local.get('SCROLL_STATE', function(items) { // Stopped by user
         scrollState = items.SCROLL_STATE;
@@ -417,18 +420,22 @@ async function scrollChatByDate(stopDate) {
 
 // Scroll conversation to top
 async function scrollChatNoLimit() {
-  var scrollingDiv = (document.getElementsByClassName('_2k8v'))[0];
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
+  var scrollingDiv = (innerDoc.getElementsByClassName('_2k8v'))[0];
   var scrollState = true;
   console.log(scrollingDiv);
   while (scrollingDiv && scrollState == true) {
     console.log('scrolling');
     scrollingDiv.scrollIntoView(true);
     await sleep(1000);
-    scrollingDiv = (document.getElementsByClassName('_2k8v'))[0];
+    scrollingDiv = (innerDoc.getElementsByClassName('_2k8v'))[0];
     if (!scrollingDiv) {
       console.log('Sleep for 5 seconds');
       await sleep(5000);
-      scrollingDiv = (document.getElementsByClassName('_2k8v'))[0];
+      scrollingDiv = (innerDoc.getElementsByClassName('_2k8v'))[0];
     }
     chrome.storage.local.get('SCROLL_STATE', function(items) { // Stopped by user
       console.log('stopped');
@@ -440,10 +447,14 @@ async function scrollChatNoLimit() {
 
 // Scroll contacts by count
 async function scrollContactsByCount(countVal) {
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
   var scrollState = true;
   var i = 0;
   while (i < countVal && scrollState == true) {
-    var scrollingDiv = (document.getElementsByClassName('_1ht1'))[document.getElementsByClassName('_1ht1').length-1];
+    var scrollingDiv = (innerDoc.getElementsByClassName('_1ht1'))[innerDoc.getElementsByClassName('_1ht1').length-1];
     if (scrollingDiv) { scrollingDiv.scrollIntoView(false); }
     else { break; }
     await sleep(1000);
@@ -457,7 +468,11 @@ async function scrollContactsByCount(countVal) {
 
 // Scroll contacts by date
 async function scrollContactsByDate(stopDate) {
-  var allDates = document.getElementsByClassName('_1ht7');
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
+  var allDates = innerDoc.getElementsByClassName('_1ht7');
   if (allDates.length) {
     var lastDisplayedDate = allDates[allDates.length-1].innerText;
     var partsDate     = lastDisplayedDate.split('-');
@@ -467,10 +482,10 @@ async function scrollContactsByDate(stopDate) {
     var date2 = new Date(stopDate);
     var scrollState = true;
     while (date1 > date2 && scrollState == true) {
-      var scrollingDiv = (document.getElementsByClassName('_1ht1'))[document.getElementsByClassName('_1ht1').length-1];
+      var scrollingDiv = (innerDoc.getElementsByClassName('_1ht1'))[innerDoc.getElementsByClassName('_1ht1').length-1];
       scrollingDiv.scrollIntoView(false); // Scroll to the last contact
       await sleep(1000);
-      allDates = document.getElementsByClassName('_1ht7');
+      allDates = innerDoc.getElementsByClassName('_1ht7');
       lastDisplayedDate = allDates[allDates.length-1].innerText;
       var partsDate     = lastDisplayedDate.split('-');
       partsDate[0]      = parseInt(partsDate[0]) + 2000;
@@ -486,25 +501,29 @@ async function scrollContactsByDate(stopDate) {
 
 // Scroll contacts completely
 async function scrollContactsNoLimit() {
+  var iframe = document.getElementsByTagName('iframe')[0];
+  var innerDoc;
+  if (iframe) { innerDoc = iframe.contentDocument || iframe.contentWindow.document; }
+  else        { innerDoc = document; }
   var scrollState        = true;
-  var totalContactBefore = document.getElementsByClassName('_1ht1').length;
-  var scrollingDiv       = (document.getElementsByClassName('_1ht1'))[totalContactBefore-1]; // Last displayed contact
+  var totalContactBefore = innerDoc.getElementsByClassName('_1ht1').length;
+  var scrollingDiv       = (innerDoc.getElementsByClassName('_1ht1'))[totalContactBefore-1]; // Last displayed contact
   var totalContactAfter  = totalContactBefore + 1;
   while (totalContactAfter > totalContactBefore && scrollState == true) {
-    totalContactBefore = document.getElementsByClassName('_1ht1').length;
-    scrollingDiv       = (document.getElementsByClassName('_1ht1'))[totalContactBefore-1]; // Last displayed contact
+    totalContactBefore = innerDoc.getElementsByClassName('_1ht1').length;
+    scrollingDiv       = (innerDoc.getElementsByClassName('_1ht1'))[totalContactBefore-1]; // Last displayed contact
     scrollingDiv.scrollIntoView(false); // Scroll to the last contact
     await sleep(1000);
-    totalContactAfter = document.getElementsByClassName('_1ht1').length;
+    totalContactAfter = innerDoc.getElementsByClassName('_1ht1').length;
     if (totalContactAfter == totalContactBefore) {
       await sleep(5000);
-      totalContactAfter = document.getElementsByClassName('_1ht1').length;
+      totalContactAfter = innerDoc.getElementsByClassName('_1ht1').length;
     }
     chrome.storage.local.get('SCROLL_STATE', function(items) { // Stopped by user
       scrollState = items.SCROLL_STATE;
     });
   }
-  (document.getElementsByClassName('_1ht1'))[0].scrollIntoView(true);
+  (innerDoc.getElementsByClassName('_1ht1'))[0].scrollIntoView(true);
   alert('End scrolling');
 }
 
@@ -629,7 +648,7 @@ async function scrollPageByDateNew(stopDate) {
     window.scrollTo(0,document.body.scrollHeight);
     await sleep(1000);
     lastDisplayedDate = getLastDisplayedDate();
-	console.log(lastDisplayedDate);
+    console.log(lastDisplayedDate);
     date1 = new Date(lastDisplayedDate);
     chrome.storage.local.get('SCROLL_STATE', function(items) { // Stopped by user
       scrollState = items.SCROLL_STATE;
@@ -735,6 +754,7 @@ function expandFunctionsNew() {
   });
 }
 
+// Expand See more
 function expandSeeMoreText() {
   var nbrLinks = 0;
   var posts = document.querySelectorAll('[role="article"]');
@@ -742,34 +762,15 @@ function expandSeeMoreText() {
     var buttons = posts[i].getElementsByClassName('oo9gr5id');
     for (var j = 0; j < buttons.length; j++) {
       var role = buttons[j].getAttribute("role");
-	  var nbrChilds = buttons[j].childElementCount;
+      var nbrChilds = buttons[j].childElementCount;
       if (!nbrChilds && role == 'button' && buttons[j] && buttons[j].innerText) {
-	    buttons[j].click();
-		nbrLinks++;
-	  }
+        buttons[j].click();
+        nbrLinks++;
+      }
     }
   }
   return(nbrLinks);
 }
-
-function expandCommentReplies() {
-  var nbrLinks = 0;
-  var posts = document.querySelectorAll('[role="article"]');
-  for (var i = 0; i < posts.length; i++) {
-    var buttons = posts[i].getElementsByClassName('p8fzw8mz');
-    for (var j = 0; j < buttons.length; j++) {
-      var role = buttons[j].getAttribute("role");
-      var hide = buttons[j].getElementsByClassName('sx_d7e427');
-      if (!hide.length && role == 'button' && buttons[j] && buttons[j].innerText) {
-	    buttons[j].click();
-		nbrLinks++;
-	  }
-    }
-  }
-  return(nbrLinks);
-}
-
-// Expand See more
 async function expandSeeMoreNew() {
   var expanded = expandSeeMoreText();
   while (expanded) {
@@ -780,6 +781,22 @@ async function expandSeeMoreNew() {
 }
 
 // Expand comments and replies
+function expandCommentReplies() {
+  var nbrLinks = 0;
+  var posts = document.querySelectorAll('[role="article"]');
+  for (var i = 0; i < posts.length; i++) {
+    var buttons = posts[i].getElementsByClassName('p8fzw8mz');
+    for (var j = 0; j < buttons.length; j++) {
+      var role = buttons[j].getAttribute("role");
+      var hide = buttons[j].getElementsByClassName('sx_d7e427');
+      if (!hide.length && role == 'button' && buttons[j] && buttons[j].innerText) {
+        buttons[j].click();
+        nbrLinks++;
+      }
+    }
+  }
+  return(nbrLinks);
+}
 async function expandCommentsNew() {
   var expanded = expandCommentReplies();
   while (expanded) {
@@ -835,8 +852,6 @@ function removeOld() {
     alert('End removing');
   });
 }
-
-// Remove
 function removeNew() {
   chrome.storage.local.get(null, function(items) {
     // Remove top menu bar
@@ -875,7 +890,7 @@ function removeNew() {
 }
 
 // Isolate scrollable
-function isolate() {
+function isolateOld() {
   chrome.storage.local.get(null, function(items) {
     // Remove useless div
     var div = document.getElementById("pagelet_bluebar");
@@ -909,7 +924,7 @@ function isolate() {
         }
       }
       if (items.PRINT == true) { window.print(); }
-    else                     { alert('End isolating'); }
+      else                     { alert('End isolating'); }
     // Page
     } else if (items.PROF_TYPE == 'page') {
       // Remove header
@@ -929,7 +944,7 @@ function isolate() {
         }
       }
       if (items.PRINT == true) { window.print(); }
-    else                     { alert('End isolating'); }
+      else                     { alert('End isolating'); }
     // Group
     } else if (items.PROF_TYPE == 'group') {
       // Remove header
@@ -952,14 +967,14 @@ function isolate() {
         }
       }
       if (items.PRINT == true) { window.print(); }
-    else                     { alert('End isolating'); }
+      else                     { alert('End isolating'); }
     // Event
     } else if (items.PROF_TYPE == 'event') {
       // Remove left and right menu
       var div = document.getElementsByClassName("_lwx");
-    while (div.length) {
+      while (div.length) {
         div[0].parentNode.parentNode.removeChild(div[0].parentNode);
-    div = document.getElementsByClassName("_lwx");
+        div = document.getElementsByClassName("_lwx");
       }
       // Remove all class attributes to adjust content to page width
       div = document.getElementById("event_header_primary");
@@ -969,7 +984,7 @@ function isolate() {
         }
       }
       if (items.PRINT == true) { window.print(); }
-    else                     { alert('End isolating'); }
+      else                     { alert('End isolating'); }
     // Messenger current chat
     } else if (items.PROF_TYPE == 'messenger') {
       // Get current profile ID and UserID
@@ -1023,10 +1038,10 @@ function isolate() {
     // Messenger contacts
     } else if (items.PROF_TYPE == 'messContacts') {
       // Remove chat
-          div = (document.getElementsByClassName("_1t2u"))[0];
+      div = (document.getElementsByClassName("_1t2u"))[0];
       if (div) { div.parentNode.removeChild(div); }
       // Remove height to be able to print the whole conversation
-        div = (document.getElementsByClassName("_9hq"))[0];
+      div = (document.getElementsByClassName("_9hq"))[0];
       if (div.getAttribute("style")) { div.removeAttribute("style"); }
       while (div = div.parentNode) {
         if (div.className) { div.className = ''; }
@@ -1040,8 +1055,79 @@ function isolate() {
         }
       }
       if (items.PRINT == true) { window.print();         }
-    else                     { alert('End isolating'); }
+      else                       { alert('End isolating'); }
     }
+  });
+}
+function isolateNew() {
+  chrome.storage.local.get(null, function(items) {
+	if (items.PROF_TYPE != 'messenger' && items.PROF_TYPE != 'messContacts') {
+      // Common elements
+      var div = document.querySelectorAll('[role="banner"]')[0];
+      if (div) { div.remove(); }
+      div = document.getElementsByClassName('cddn0xzi');
+      for (var i = (div.length-1); i >= 0; i--) { div[i].remove(); }
+      div = document.getElementsByClassName('lpgh02oy');
+      if (div[1]) { div[1].remove(); }
+      // People
+      if (items.PROF_TYPE == 'people') {
+        div = document.getElementsByClassName('o387gat7');
+        for (var i = 0; i < div.length; i++) { div[i].remove(); }
+      // Page
+      } else if (items.PROF_TYPE == 'page') {
+        if (div = document.getElementsByClassName('sjgh65i0')[0]) {
+          while (div = div.parentNode) { if (div.className) { div.className = ''; } }
+        }
+      // Group
+      } else if (items.PROF_TYPE == 'group') {
+	    if (div = document.getElementsByClassName('ihqw7lf3')[0]) {
+          while (div = div.parentNode) { if (div.className) { div.className = ''; } }
+        }
+      // Event
+      } else if (items.PROF_TYPE == 'event') {
+        if (div = document.getElementsByClassName('sjgh65i0')[0]) {
+          while (div = div.parentNode) { if (div.className) { div.className = ''; } }
+        }
+      }
+	} else {
+      // Reload the frame
+      var div = document.getElementsByTagName('iframe')[0];
+      if (div && div.src) {
+        if (confirm('To isolate Messenger conversation or contact list, the Messenger frame must be reloaded outside of the main page, continue?')) {
+          location.href = div.src;
+        }
+      }
+      // Messenger current chat
+      if (items.PROF_TYPE == 'messenger') {
+        var div2 = document.querySelectorAll('[role="banner"]')[0]; // Remove contact list
+        if (div2 && div2.parentNode) { div2.parentNode.remove(); }
+        var div3 = document.getElementsByClassName(' _4_j5')[0];
+        if (div3) { div3.remove(); }
+        var div3 = document.getElementsByClassName('_673w')[0];
+        if (div3) { div3.remove(); }
+        var div4 = document.querySelectorAll('[role="region"]')[1];
+        if (div4) { div4.remove(); }
+		var div5;
+        if (div5 = document.querySelectorAll('[role="region"]')[0]) {
+          while (div5 = div5.parentNode) { if (div5.className) { div5.className = ''; } }
+        }
+      // Messenger contacts
+      } else if (items.PROF_TYPE == 'messContacts') {
+        var div2 = document.querySelectorAll('[role="main"]')[1];
+        if (div2) { div2.remove(); }
+        var div3 = document.querySelectorAll('[role="banner"]')[0];
+        if (div3) { div3.remove(); }
+        var div4 = document.getElementsByClassName('_58ak')[0];
+        if (div4) { div4.remove(); }
+        var div5 = document.getElementsByClassName('_6zkc');
+        for (var i = (div5.length-1); i >= 0; i--) {
+		  var div6 = div5[i];
+          while (div6 = div6.parentNode) { if (div6.className) { div6.className = ''; } }
+        }
+      }
+    }
+    if (items.PRINT == true) { window.print();         }
+    else                     { alert('End isolating'); }
   });
 }
 
@@ -1123,20 +1209,20 @@ async function searchMobileChat (fbid) {
   if (!el) { return; }
   var regex = new RegExp(fbid);
   for (var i = 0; i < el.length; i++) {
-	console.log(el[i]);
+    console.log(el[i]);
     if (el[i].href && el[i].href.match(regex)) { el[i].click(); return; }
   }
   var scrollingLink = (document.getElementsByClassName('touchable primary'))[0];
   while (scrollingLink) {
-	scrollingLink.click();
-	await sleep(1000);
-	el = document.getElementsByClassName('_5b6s');
-	for (var i = (el.length-1); i >= 0; i--) {
-	  console.log(el[i]);
+    scrollingLink.click();
+    await sleep(1000);
+    el = document.getElementsByClassName('_5b6s');
+    for (var i = (el.length-1); i >= 0; i--) {
+      console.log(el[i]);
       if (el[i].href && el[i].href.match(regex)) { el[i].click(); return; }
     }
-	scrollingLink = (document.getElementsByClassName('touchable primary'))[0];
-  }	
+    scrollingLink = (document.getElementsByClassName('touchable primary'))[0];
+  }    
 }
 
 // Open conversation in Facebook Mobile
@@ -1155,7 +1241,7 @@ chrome.storage.local.get(null, function(items) {
   } else {
     var currUrl = location.href;
     if (currUrl.match(/https\:\/\/m.facebook.com\/messages/) && items.FBID) {
-	  searchMobileChat(items.FBID);
+      searchMobileChat(items.FBID);
     }
   }
 });

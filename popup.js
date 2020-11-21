@@ -166,41 +166,12 @@ document.getElementById('openMobile').addEventListener('click', function() {
   });
 });
 
-// Disable images in Chrome
-document.getElementById('disableImages').addEventListener('click', function() {
-  var regex = RegExp('facebook.com');
-  var url = tabId.url;
-  if (regex.test(url)) {
-    var incognito = tabId.incognito;
-    var pattern = /^file:/.test(url) ? url : url.replace(/\/[^\/]*?$/, '/*');
-    chrome.contentSettings['images'].get({
-      'primaryUrl': url,
-      'incognito': incognito
-    }, function(details) {  
-	console.log('ok');
-      chrome.contentSettings['images'].set({
-        'primaryPattern': pattern,
-        'setting': details.setting == 'allow' ? 'block' : 'allow',
-        'scope': (incognito ? 'incognito_session_only' : 'regular')
-      });
-    });
-    chrome.tabs.reload();
-    window.close();
-  }
-});
-
 // Get Current Facebook ID
 document.addEventListener('DOMContentLoaded', function() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     tabId = tabs[0];
     var regex = RegExp('facebook.com');
     if (regex.test(tabs[0].url)) {
-      chrome.contentSettings['images'].get({
-        'primaryUrl': tabs[0].url,
-      }, function(details) {
-        if (details.setting == 'allow') { document.getElementById('disableImages').innerText = 'Disable images'; }
-        else                            { document.getElementById('disableImages').innerText = 'Enable images';  }
-      });
       chrome.tabs.sendMessage(tabs[0].id, {type: "currFBID"}, function(response) {
         if (response && response.msg > 0) {
           console.log(response.msg);
