@@ -39,7 +39,7 @@ details[open] summary:before {
 }
 body {
   font-family: Calibri, Tahoma, Arial; 
-  width: 350px;
+  width: 360px;
 }
 h1 {
   width: 100%;
@@ -237,8 +237,9 @@ select.soflow {
    -webkit-padding-start: 2px;
    -webkit-user-select: none;
    background-image: url(images/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
-   background-position: 97% center;
+   background-position: 100% center;
    background-repeat: no-repeat;
+   background-attachment: fixed;
    border: 1px solid #AAA;
    color: #555;
    font-size: 12px;

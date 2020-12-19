@@ -2,6 +2,18 @@
 
 var tabId;
 
+// Only one group open
+const details = document.querySelectorAll("details");
+details.forEach((targetDetail) => {
+  targetDetail.addEventListener("click", () => {
+    details.forEach((detail) => {
+      if (detail !== targetDetail) {
+        detail.removeAttribute("open");
+      }
+    });
+  });
+});
+
 // Scroll
 document.getElementById('scroll').addEventListener('click', function() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -107,6 +119,28 @@ document.getElementById('remLikesInCom').addEventListener('click', function() {
   chrome.storage.local.set({ 'REM_LIKES_INCOM': remLikesInCom });
 });
 
+// Dump
+document.getElementById('dump').addEventListener('click', function() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var regex = RegExp('facebook.com');
+    if (regex.test(tabs[0].url)) {
+      var dumpType = document.getElementById('dumpType').value;
+      chrome.storage.local.set({ 'DUMP_TYPE': dumpType });
+      chrome.tabs.sendMessage(tabs[0].id, {type: "dump"}, function(response) {
+        console.log(response.msg);
+      });
+    }
+  });
+});
+document.getElementById('addProfImg').addEventListener('click', function() {
+  var addProfImg = document.getElementById('addProfImg').checked;
+  chrome.storage.local.set({ 'ADD_PROF_IMG': addProfImg });
+});
+document.getElementById('addBaseURI').addEventListener('click', function() {
+  var addBaseURI = document.getElementById('addBaseURI').checked;
+  chrome.storage.local.set({ 'ADD_BASE_URI': addBaseURI });
+});
+
 // Isolate
 document.getElementById('isolate').addEventListener('click', function() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -157,7 +191,7 @@ document.getElementById('openMobile').addEventListener('click', function() {
       var fbid = document.getElementById('fbid').value;
       if (fbid && fbid != "No ID found!" && fbid != "Not on Facebook!") {
         chrome.storage.local.set({ 'FBID': fbid });
-		var urlAddr = 'https://m.facebook.com/messages';
+        var urlAddr = 'https://m.facebook.com/messages';
         var oldUI = document.getElementById('pagelet_bluebar');
         if (!oldUI) { urlAddr += '/?entrypoint=jewel&no_hist=1'; }
         chrome.tabs.create({ url: urlAddr });
@@ -172,27 +206,36 @@ document.addEventListener('DOMContentLoaded', function() {
     tabId = tabs[0];
     var regex = RegExp('facebook.com');
     if (regex.test(tabs[0].url)) {
+	  chrome.storage.local.get(['PROF_TYPE'], function(items) {
+        // Set default dump for dump function
+        document.getElementById('contrib').selected = true; // default
+        if (tabs[0].url.includes('mutual_friends')) {
+          document.getElementById('mutualFriends').selected = true;
+        } else if (tabs[0].url.includes('members')) {
+          document.getElementById('groupMembers').selected = true;
+        } else if (tabs[0].url.includes('friends') || tabs[0].url.includes('followers') || tabs[0].url.includes('following')) {
+          document.getElementById('friends').selected = true;
+        }
+        // Set profile type for isolate function
+        if (items.PROF_TYPE && document.getElementById(items.PROF_TYPE)) {
+          document.getElementById(items.PROF_TYPE).selected = true;
+          if (items.PROF_TYPE == 'messenger') {
+            document.getElementById('chat').selected = true;
+            chrome.storage.local.set({ 'SCROLL_TYPE': 'chat' });
+          }
+        } else {
+          regex = RegExp('m.facebook.com');
+          if (regex.test(tabs[0].url)) {
+            document.getElementById('fbMobile').selected = true;
+            chrome.storage.local.set({ 'SCROLL_TYPE': 'chatMobile' });
+          }
+        }
+      });
       chrome.tabs.sendMessage(tabs[0].id, {type: "currFBID"}, function(response) {
         if (response && response.msg > 0) {
           console.log(response.msg);
           document.getElementById('fbid').value = response.msg;
           document.getElementById('fbid').style.color = '#0066cc';
-          // Set profile type for isolate function
-          chrome.storage.local.get(['PROF_TYPE'], function(items) {
-            if (items.PROF_TYPE && document.getElementById(items.PROF_TYPE)) {
-              document.getElementById(items.PROF_TYPE).selected = true;
-              if (items.PROF_TYPE == 'messenger') {
-                document.getElementById('chat').selected = true;
-                chrome.storage.local.set({ 'SCROLL_TYPE': 'chat' });
-              }
-            } else {
-              regex = RegExp('m.facebook.com');
-              if (regex.test(tabs[0].url)) {
-                document.getElementById('fbMobile').selected = true;
-                chrome.storage.local.set({ 'SCROLL_TYPE': 'chatMobile' });
-              }
-            }
-          });
         } else {
           document.getElementById('fbid').value = "No ID found!";
           document.getElementById('fbid').style.color = 'grey';
@@ -210,11 +253,18 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.storage.local.set({ 'SCROLL_TYPE': 'page' });
   chrome.storage.local.set({ 'SCROLL_LIMIT_TYPE': 'none' });
   chrome.storage.local.set({ 'SCROLL_LIMIT_VAL': null });
+  chrome.storage.local.set({ 'SCROLL_STATE': false });
   chrome.storage.local.set({ 'EXPAND_SEEMORE': false });
   chrome.storage.local.set({ 'EXPAND_COMMENTS': false });
   chrome.storage.local.set({ 'EXPAND_POSTS': false });
   chrome.storage.local.set({ 'REM_BLUEBAR': false });
   chrome.storage.local.set({ 'REM_COMMENTS': false });
+  chrome.storage.local.set({ 'REM_COMMENTS_BOX': false });
+  chrome.storage.local.set({ 'REM_LIKES_INCOM': false });
   chrome.storage.local.set({ 'PRINT': false });
   chrome.storage.local.set({ 'FBID': '' });
+  chrome.storage.local.set({ 'PROF_TYPE': '' });
+  chrome.storage.local.set({ 'DUMP_TYPE': '' });
+  chrome.storage.local.set({ 'ADD_PROF_IMG': false });
+  chrome.storage.local.set({ 'ADD_BASE_URI': false });
 });

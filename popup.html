@@ -21,6 +21,7 @@
           <label>Scroll type:</label>
           <select class="soflow" name="scrollType" id="scrollType" style="margin-left: 5px; width: 180px;">
             <option value="page" id="toBottom">Page to bottom</option>
+			<option value="likes" id="toBottom">Likes in popup</option>
             <option value="chat" id="chat">Messenger current chat</option>
             <option value="contact" id="contacts">Messenger contacts</option>
             <option value="chatMobile" id="fbMobile">Facebook&#8482; Mobile chat</option>
@@ -77,6 +78,28 @@
             </label>
           </div>
           <div style="text-align: center"><button id="remove">Remove</button></div>
+    </details>
+    <details>
+        <summary>Dumping</summary>
+          <div style="margin-top: 10px;">
+            <label style="font-size: 14px; color: black">Type:</label>
+            <select class="soflow" name="dumpType" id="dumpType" style="margin-left: 5px; width: 220px;">
+			  <option value="contrib" id="contrib">Contributors in current page</option>
+			  <option value="likes" id="likes">Likes in current popup</option>
+              <option value="friends" id="friends">Friends in current page</option>
+              <option value="mutualFriends" id="mutualFriends">Mutual friends</option>
+              <option value="groupMembers" id="groupMembers">Group Members</option>
+            </select>
+            <label class="container">Add profile image
+              <input type="checkbox" id="addProfImg">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Add current page URL
+              <input type="checkbox" id="addBaseURI">
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <div style="text-align: center"><button id="dump">Dump</button></div>
     </details>
     <details>
         <summary>Isolate scrollable</summary>
