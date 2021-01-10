@@ -86,16 +86,33 @@
             <select class="soflow" name="dumpType" id="dumpType" style="margin-left: 5px; width: 220px;">
 			  <option value="contrib" id="contrib">Contributors in current page</option>
 			  <option value="likes" id="likes">Likes in current popup</option>
+              <option value="allLikes" id="allLikes">All Likes</option>
               <option value="friends" id="friends">Friends in current page</option>
+              <option value="allFriends" id="allFriends">All friends</option>
               <option value="mutualFriends" id="mutualFriends">Mutual friends</option>
               <option value="groupMembers" id="groupMembers">Group Members</option>
+              <option value="dumpContacts" id="dumpContacts">Messenger contacts</option>
+              <option value="album" id="album">Current album</option>
+              <option value="allAlbums" id="allAlbums">All Albums</option>
             </select>
-            <label class="container">Add profile image
+            <label class="container" id="addProfImgOpt" style="display:inline-block;">Add profile image
               <input type="checkbox" id="addProfImg">
               <span class="checkmark"></span>
             </label>
-            <label class="container">Add current page URL
+            <label class="container" id="addBaseURIOpt" style="display:inline-block;">Add current page URL
               <input type="checkbox" id="addBaseURI">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container" id="addLikesCommentsOpt" style="display:none;">Likes in comments/replies
+              <input type="checkbox" id="addLikesComments">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container" id="smallSizePhotosOpt" style="display:none;">Small size photos
+              <input type="checkbox" id="smallSizePhotos" checked>
+              <span class="checkmark"></span>
+            </label>
+            <label class="container" id="fullSizePhotosOpt" style="display:none;">Full size photos
+              <input type="checkbox" id="fullSizePhotos" checked>
               <span class="checkmark"></span>
             </label>
           </div>
@@ -124,6 +141,9 @@
         <summary>Others</summary>
         <div style="margin-top: 10px;">
           <div style="text-align: center">
+            <label>Time to wait:</label>
+			<input type="number" id="waitingTime" min="1" max="100" step="1" value ="1" style="margin-left: 20px; margin-bottom: 5px;"/>
+			<label>second(s)</label><br>
             <button id="datetime" style="margin-bottom: 5px; width: 120px;">Show datetime</button>
             <button id="translate" style="margin-bottom: 5px; width: 100px; margin-left: 5px;">Translate</button>
           </div>

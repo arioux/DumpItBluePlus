@@ -1,6 +1,6 @@
 {
   "name": "DumpItBlue+",
-  "version": "1.5",
+  "version": "2.0",
   "description": "Complement to DumpItBlue tool",
   "permissions": ["storage", "https://*.facebook.com/"],
   "browser_action": {
