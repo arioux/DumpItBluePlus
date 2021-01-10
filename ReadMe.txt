@@ -1,9 +1,10 @@
 DumpItBlue+
-Description   : This Chrome extension provides some basic functions like scrolling, expanding, removing, dumping, isolating and more.
-Author        : Alain Rioux (admin@le-tools.com)
-WebSite       : http://le-tools.com/DumpItBlueExtension.html
-Documentation : http://le-tools.com/DumpItBlueExtensionDoc.html
-GitHub        : https://github.com/arioux/DumpItBluePlus
+Description      : This Chrome extension provides some basic functions like scrolling, expanding, removing, dumping, isolating and more.
+Author           : Alain Rioux (admin@le-tools.com)
+WebSite          : http://le-tools.com/DumpItBlueExtension.html
+Documentation    : http://le-tools.com/DumpItBlueExtensionDoc.html
+GitHub           : https://github.com/arioux/DumpItBluePlus
+Chrome Web store : https://chrome.google.com/webstore/detail/dumpitblue%20/igmgknoioooacbcpcfgjigbaajpelbfe
 
 Licence
 -------
