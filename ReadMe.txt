@@ -1,5 +1,5 @@
 DumpItBlue+
-Description      : This Chrome extension provides some basic functions like scrolling, expanding, removing, dumping, isolating and more.
+Description      : This Chrome extension provides some basic functions like scrolling, dumping, and more.
 Author           : Alain Rioux (admin@le-tools.com)
 WebSite          : http://le-tools.com/DumpItBlueExtension.html
 Documentation    : http://le-tools.com/DumpItBlueExtensionDoc.html
@@ -9,7 +9,7 @@ Chrome Web store : https://chrome.google.com/webstore/detail/dumpitblue%20/igmgk
 Licence
 -------
 
-Copyright (c) 2019-2021 Alain Rioux (le-tools.com)
+Copyright (c) 2019-2023 Alain Rioux (le-tools.com)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
