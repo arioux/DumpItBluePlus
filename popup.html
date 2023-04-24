@@ -19,9 +19,9 @@
         <summary>Scrolling</summary>
         <div style="margin-top: 10px;">
           <label>Scroll type:</label>
-          <select class="soflow" name="scrollType" id="scrollType" style="margin-left: 5px; width: 180px;">
+          <select class="soflow" name="scrollType" id="scrollType" style="margin-left: 5px; width: 200px;">
             <option value="page" id="toBottom">Page to bottom</option>
-			<option value="likes" id="toBottom">Likes in popup</option>
+						<option value="likes" id="popup">Likes or comments in popup</option>
             <option value="chat" id="chat">Messenger current chat</option>
             <option value="contact" id="contacts">Messenger contacts</option>
             <option value="chatMobile" id="fbMobile">Facebook&#8482; Mobile chat</option>
@@ -32,64 +32,22 @@
           <select name="scrollLimit" class="soflow" id="scrollLimit" style="margin-left: 36px; width: 90px;">
             <option value="noLimit">No limit</option>
             <option value="count">Count</option>
-            <option value="date">On date</option>
           </select>
           <input type="number" id="scrollLimitCountVal" min="1" max="100" step="1" value ="1" style="margin-left: 5px; display:none;"/>
-          <input type="date" name="scrollLimitDate" id="scrollLimitDateVal" style="margin-left: 5px; display:none;"/>
         </div>
       <div style="text-align: center"><button id="scroll" class="spec">Scroll</button> <button id="scrollStop" class="spec">Stop</button></div>
       </details>
-    <details>
-        <summary>Expanding</summary>
-        <div style="margin-top: 10px;">
-          <label class="container">See more
-            <input type="checkbox" id="SeeMore">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container">Comments/replies
-            <input type="checkbox" id="Comments">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container">More posts
-            <input type="checkbox" id="Posts">
-            <span class="checkmark"></span>
-          </label>
-          </div>
-          <div style="text-align: center"><button id="expand">Expand</button></div>
-    </details>
-    <details>
-        <summary>Removing</summary>
-          <div style="margin-top: 10px;">
-            <label class="container">Top bar
-              <input type="checkbox" id="remBluebar">
-              <span class="checkmark"></span>
-            </label>
-            <label class="container">Comments
-              <input type="checkbox" id="remComments">
-              <span class="checkmark"></span>
-            </label>
-            <label class="container">Write Comment Boxes
-              <input type="checkbox" id="remCommentBox">
-              <span class="checkmark"></span>
-            </label>
-            <label class="container">Like bubbles in comments
-              <input type="checkbox" id="remLikesInCom">
-              <span class="checkmark"></span>
-            </label>
-          </div>
-          <div style="text-align: center"><button id="remove">Remove</button></div>
-    </details>
-    <details>
+			<details>
         <summary>Dumping</summary>
           <div style="margin-top: 10px;">
             <label style="font-size: 14px; color: black">Type:</label>
-            <select class="soflow" name="dumpType" id="dumpType" style="margin-left: 5px; width: 220px;">
-			  <option value="contrib" id="contrib">Contributors in current page</option>
-			  <option value="likes" id="likes">Likes in current popup</option>
+            <select class="soflow" name="dumpType" id="dumpType" style="margin-left: 5px; width: 200px;">
+							<option value="contrib" id="contrib">Contributors in current popup</option>
+							<option value="likes" id="likes">Likes in current popup</option>
+              <option value="allContrib" id="allContrib">All Contributors</option>
               <option value="allLikes" id="allLikes">All Likes</option>
               <option value="friends" id="friends">Friends in current page</option>
               <option value="allFriends" id="allFriends">All friends</option>
-              <option value="mutualFriends" id="mutualFriends">Mutual friends</option>
               <option value="groupMembers" id="groupMembers">Group Members</option>
               <option value="dumpContacts" id="dumpContacts">Messenger contacts</option>
               <option value="album" id="album">Current album</option>
@@ -101,10 +59,6 @@
             </label>
             <label class="container" id="addBaseURIOpt" style="display:inline-block;">Add current page URL
               <input type="checkbox" id="addBaseURI">
-              <span class="checkmark"></span>
-            </label>
-            <label class="container" id="addLikesCommentsOpt" style="display:none;">Likes in comments/replies
-              <input type="checkbox" id="addLikesComments">
               <span class="checkmark"></span>
             </label>
             <label class="container" id="smallSizePhotosOpt" style="display:none;">Small size photos
@@ -119,33 +73,12 @@
           <div style="text-align: center"><button id="dump">Dump</button></div>
     </details>
     <details>
-        <summary>Isolate scrollable</summary>
-          <div style="margin-top: 10px;">
-            <label style="font-size: 14px; color: black">Profile type:</label>
-            <select class="soflow" name="profileType" id="profileType" style="margin-left: 5px; width: 180px;">
-              <option value="people" id="people">People</option>
-              <option value="page" id="page">Page</option>
-              <option value="group" id="group">Group</option>
-              <option value="event" id="event">Event</option>
-              <option value="messenger" id="messenger">Messenger current chat</option>
-              <option value="messContacts" id="messContacts">Messenger contacts</option>
-            </select>
-            <label class="container">Open print dialog box
-              <input type="checkbox" id="print">
-              <span class="checkmark"></span>
-            </label>
-          </div>
-          <div style="text-align: center"><button id="isolate">Isolate</button></div>
-    </details>
-    <details>
         <summary>Others</summary>
         <div style="margin-top: 10px;">
           <div style="text-align: center">
             <label>Time to wait:</label>
-			<input type="number" id="waitingTime" min="1" max="100" step="1" value ="1" style="margin-left: 20px; margin-bottom: 5px;"/>
-			<label>second(s)</label><br>
-            <button id="datetime" style="margin-bottom: 5px; width: 120px;">Show datetime</button>
-            <button id="translate" style="margin-bottom: 5px; width: 100px; margin-left: 5px;">Translate</button>
+						<input type="number" id="waitingTime" min="1" max="100" step="1" value ="1" style="margin-left: 20px; margin-bottom: 5px;"/>
+						<label>second(s)</label><br>
           </div>
           <div style="text-align: center"><button id="openMobile" style="margin-bottom: 5px; width: 225px;">Open chat in Facebook&#8482; Mobile</button></div>
         </div>

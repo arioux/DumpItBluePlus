@@ -1,9 +1,10 @@
 {
   "name": "DumpItBlue+",
-  "version": "2.0",
-  "description": "Complement to DumpItBlue tool",
-  "permissions": ["storage", "https://*.facebook.com/"],
-  "browser_action": {
+  "version": "3.0",
+  "description": "DumpItBlue is a tool that helps to dump Facebook™ stuff for analysis or reporting purposes.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://*.facebook.com/"],
+  "action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/62861-blue-book-icon16.png",
@@ -25,5 +26,5 @@
       "run_at": "document_idle"
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }

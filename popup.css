@@ -14,28 +14,23 @@ summary {
   font-size: .8em; 
   font-weight: bold; 
   margin: -1%; 
-  padding: 5px 0;
+  padding: 5px 0 5px 5px;
   position: relative; 
   width: 102%;
 }
 summary:hover, details[open] summary { background: #E1E1E1; }
-summary::-webkit-details-marker { display: none; }
+summary: { display: block; }
 summary:before{
   border-radius: 5px; 
-  content: "+"; 
   color: #363636; 
   display: block; 
   float: left; 
   font-size: 1.5em; 
   font-weight: bold; 
-  margin: -4px 10px 0 10px; 
-  padding: 0; 
+  margin: -4px 50px 0 10px; 
+  padding: 5;
   text-align: center; 
   width: 20px;
-}
-details[open] summary:before {
-  content: "-"; 
-  margin-top: -4px;
 }
 body {
   font-family: Calibri, Tahoma, Arial; 
@@ -99,11 +94,6 @@ input[type=text] {
 input[type="number"] {
   width: 45px;
   height: 20px;
-  border-radius: 2px;
-}
-input[type="date"] {
-  width: 130px;
-  height: 23px;
   border-radius: 2px;
 }
 /* The container */
