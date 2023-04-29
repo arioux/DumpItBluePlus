@@ -88,6 +88,57 @@ document.getElementById('dumpType').addEventListener('change', function() {
     document.getElementById('fullSizePhotosOpt').style.display = 'none';
   }
 });
+// Show
+document.getElementById('show').addEventListener('click', function() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var regex = RegExp('facebook.com');
+    if (regex.test(tabs[0].url)) {
+			chrome.storage.local.set({ 'SHOW': 1 });
+      var remBlueBar = document.getElementById('remBluebar').checked;
+      chrome.storage.local.set({ 'REM_BLUEBAR': remBlueBar });
+      var remComments = document.getElementById('remComments').checked;
+      chrome.storage.local.set({ 'REM_COMMENTS': remComments });
+      var remCommentBox = document.getElementById('remCommentBox').checked;
+      chrome.storage.local.set({ 'REM_COMMENTS_BOX': remCommentBox });
+      chrome.tabs.sendMessage(tabs[0].id, {type: "show"}, function(response) {
+        console.log(response.msg);
+      });
+    }
+  });
+});
+// Hide
+document.getElementById('hide').addEventListener('click', function() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var regex = RegExp('facebook.com');
+    if (regex.test(tabs[0].url)) {
+			chrome.storage.local.set({ 'SHOW': 0 });
+      var remBlueBar = document.getElementById('remBluebar').checked;
+      chrome.storage.local.set({ 'REM_BLUEBAR': remBlueBar });
+      var remComments = document.getElementById('remComments').checked;
+      chrome.storage.local.set({ 'REM_COMMENTS': remComments });
+      var remCommentBox = document.getElementById('remCommentBox').checked;
+      chrome.storage.local.set({ 'REM_COMMENTS_BOX': remCommentBox });
+      chrome.tabs.sendMessage(tabs[0].id, {type: "hide"}, function(response) {
+        console.log(response.msg);
+      });
+    }
+  });
+});
+// Isolate
+document.getElementById('isolate').addEventListener('click', function() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var regex = RegExp('facebook.com');
+    if (regex.test(tabs[0].url)) {
+      var profType = document.getElementById('profileType').value;
+      chrome.storage.local.set({ 'PROF_TYPE': profType });
+      var print = document.getElementById('print').checked;
+      chrome.storage.local.set({ 'PRINT': print });
+      chrome.tabs.sendMessage(tabs[0].id, {type: "isolate"}, function(response) {
+        console.log(response.msg);
+      });
+    }
+  });
+});
 // Time to wait setting change
 document.getElementById('waitingTime').addEventListener('change', function() {
   var wailVal = document.getElementById('waitingTime').value * 1000;

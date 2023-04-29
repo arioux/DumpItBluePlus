@@ -14,6 +14,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     console.log('Open in Facebook Mobile');
     openMobile();
     sendResponse({msg: "Opening in Facebook Mobile started"});
+  } else if (request.type === "show" || request.type === "hide") {
+    console.log('Showing/Hiding');
+		show_hide();
+    sendResponse({msg: "Showing/Hiding started"});
+  } else if (request.type === "isolate") {
+    console.log('Isolating');
+    isolate();
+    sendResponse({msg: "isolating started"});
   } else if (request.type === "currFBID") {
 		var fbid    = '';
 		var currUrl = location.href;
@@ -1140,6 +1148,168 @@ async function dumpAllAlbums(smallSizePhotos, fullSizePhotos, timeToWait) {
   newWindow.document.write(html);
   await sleep(1000);
   newWindow.alert('Use "Save as" dialog to save all the photos.');
+}
+
+// Show/Hide
+function show_hide() {
+  chrome.storage.local.get(null, function(items) {
+    // Show/Hide navigation bar bar
+		if (items.REM_BLUEBAR == true) {
+			var selectNode = document.getElementById('ssrb_top_nav_start');
+			if (selectNode) {
+				var topNode = selectNode.parentNode;
+				var childs  = topNode.childNodes;
+				var isNavBarNode = 0;
+				for (var i = (childs.length-1); i > 1; i--) {
+					if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
+						isNavBarNode = 1;
+					}
+					if (isNavBarNode && childs[i].tagName) {
+						if (items.SHOW == 0) { childs[i].style.display = "none";  }
+						else                 { childs[i].style.display = "block"; }
+					}
+				}
+			}
+		}
+    // Show/Hide comments
+		if (items.REM_COMMENTS == true) {
+			var reactSelectNodes = document.querySelectorAll('[role="toolbar"]');
+			for (var i = (reactSelectNodes.length-1); i >= 0; i--) {
+				if (items.SHOW == 0) {
+					reactSelectNodes[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
+				} else {
+					reactSelectNodes[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "block";
+				}
+			}
+		}
+    // Show/Hide Write Comment Box
+		if (items.REM_COMMENTS_BOX == true) {
+			var WCSelectNodes = document.querySelectorAll('[aria-label="Available Voices"]');
+			for (var i = (WCSelectNodes.length-1); i >= 0; i--) {
+				if (items.SHOW == 0) {
+					WCSelectNodes[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
+				} else {
+					WCSelectNodes[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "block";
+				}
+			}
+			var writeSomething = document.querySelector('[aria-label="Profile"]');
+			if (writeSomething) {
+				writeSomething.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display = "none";
+			}
+		}
+  });
+}
+
+// Isolate scrollable
+function isolate() {
+  chrome.storage.local.get(null, function(items) {
+      // Remove navigation bar and menu
+			var selectNode = document.getElementById('ssrb_top_nav_start');
+			if (selectNode) {
+				var topNode = selectNode.parentNode;
+				var childs = topNode.childNodes;
+				var isNavBarNode = 0;
+				for (var i = (childs.length-1); i > 1; i--) {
+					if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
+						isNavBarNode = 1;
+					}
+					if (isNavBarNode) { childs[i].remove(); }
+				}
+			}
+      // Posts (People and page)
+      if (items.PROF_TYPE === 'posts') {
+				var mainNode = document.querySelector('[role="main"]');
+				var childs   = mainNode.childNodes;
+				for (var i = (childs.length-2); i >= 0; i--) { childs[i].remove(); }
+				var childs2 = childs[childs.length-1].childNodes;
+				var temp = childs2[2].childNodes[0].childNodes[0];
+				temp.remove();
+				childs2[1].remove();
+				// Remove all classes
+				var currentNode = childs2[1].childNodes[0].childNodes[0];
+				while (!currentNode.id) {
+					currentNode.className = '';
+					currentNode = currentNode.parentNode;
+				}
+      // Group
+      } else if (items.PROF_TYPE === 'group') {
+				var selectNode = document.getElementById('ssrb_top_nav_start');
+				if (selectNode) {
+					var topNode = selectNode.parentNode;
+					var childs = topNode.childNodes;
+					var isNavBarNode = 0;
+					for (var i = (childs.length-1); i > 1; i--) {
+						if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
+							isNavBarNode = 1;
+						}
+						if (isNavBarNode) { childs[i].remove(); }
+					}
+				}
+				var navMenu = document.querySelector('[role="navigation"]');
+				if (navMenu) { navMenu.remove(); }
+				var mainNode = document.querySelectorAll('[role="main"]')[1];
+				var childs   = mainNode.childNodes;
+				for (var i = (childs.length-2); i >= 0; i--) { childs[i].remove(); }
+				childs[0].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].style.display = "none"; // Can't remove, so hide
+				// Remove all classes
+				var currentNode = childs[0].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0];
+				while (!currentNode.id) {
+					currentNode.className = '';
+					currentNode = currentNode.parentNode;
+				}
+      // Event
+      } else if (items.PROF_TYPE === 'event') {
+				var navMenu = document.querySelector('[role="navigation"]');
+				if (navMenu) { navMenu.remove(); }
+				var mainNode = document.querySelectorAll('[role="main"]')[1];
+				var childs   = mainNode.childNodes;
+				for (var i = (childs.length-2); i >= 0; i--) { childs[i].remove(); }
+				childs[0].childNodes[0].childNodes[0].childNodes[1].style.display = "none";
+				// Remove all classes
+				var currentNode = childs[0].childNodes[0].childNodes[0].childNodes[0];
+				while (!currentNode.id) {
+					currentNode.className = '';
+					currentNode = currentNode.parentNode;
+				}
+      // Messenger current chat
+			} else if (items.PROF_TYPE === 'messenger') {
+			// Remove contacts
+			var navMenu = document.querySelector('[role="navigation"]');
+			if (navMenu) { navMenu.remove(); }
+			// Remove right info
+			var mainNode = document.querySelectorAll('[role="main"]')[1];
+			var childs   = mainNode.childNodes[0].childNodes[0].childNodes;
+			if (childs[1]) { childs[1].remove(); }
+			if (childs[0].childNodes[0]) { childs[0].childNodes[0].remove(); } // Remove conversation title
+			// Remove bottom
+			var writeBar = document.querySelector('[aria-label="Open more actions"]');
+			if (writeBar) { writeBar.parentNode.parentNode.parentNode.remove(); }
+			// Remove all classes
+			var currentNode = childs[0].querySelector('[role="none"]').parentNode.parentNode;
+			while (!currentNode.id) {
+				currentNode.className = '';
+				currentNode = currentNode.parentNode;
+			}
+		// Messenger contacts
+		} else if (items.PROF_TYPE === 'messContacts') {
+			// Remove conversation
+			var mainNode = document.querySelectorAll('[role="main"]')[1];
+			if (mainNode) { mainNode.remove(); }
+			var topNode = document.querySelector('[role="navigation"]');
+			var temp = topNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes;
+			temp[3].remove(); // Remove bottom
+			temp[1].remove(); // Remove search box
+			temp[0].remove(); // Remove title
+			// Remove all classes
+			var currentNode = topNode.querySelector('[role="grid"]').childNodes[0].childNodes[0].childNodes[0];
+			while (!currentNode.id || (currentNode.id && !currentNode.id.match(/mount_0_0/))) {
+				currentNode.className = '';
+				currentNode = currentNode.parentNode;
+			}
+		}
+    if (items.PRINT == true) { window.print();         }
+    else                     { alert('End isolating'); }
+  });
 }
 
 // Search conversation in current page

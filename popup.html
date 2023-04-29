@@ -73,6 +73,42 @@
           <div style="text-align: center"><button id="dump">Dump</button></div>
     </details>
     <details>
+        <summary>Showing/Hiding</summary>
+          <div style="margin-top: 10px;">
+            <label class="container">Top bar
+              <input type="checkbox" id="remBluebar">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Comments
+              <input type="checkbox" id="remComments">
+              <span class="checkmark"></span>
+            </label>
+            <label class="container">Write Comment Boxes
+              <input type="checkbox" id="remCommentBox">
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <div style="text-align: center"><button id="hide">Hide</button> <button id="show">Show</button></div>
+    </details>
+    <details>
+			<summary>Isolate scrollable</summary>
+			<div style="margin-top: 10px;">
+				<label style="font-size: 14px; color: black">Profile type:</label>
+				<select class="soflow" name="profileType" id="profileType" style="margin-left: 5px; width: 180px;">
+					<option value="posts" id="posts">Posts (People or Page</option>
+					<option value="group" id="group">Group</option>
+					<option value="event" id="event">Event</option>
+					<option value="messenger" id="messenger">Messenger current chat</option>
+					<option value="messContacts" id="messContacts">Messenger contacts</option>
+				</select>
+				<label class="container">Open print dialog box
+					<input type="checkbox" id="print">
+					<span class="checkmark"></span>
+				</label>
+			</div>
+			<div style="text-align: center"><button id="isolate">Isolate</button></div>
+    </details>
+    <details>
         <summary>Others</summary>
         <div style="margin-top: 10px;">
           <div style="text-align: center">
