@@ -938,11 +938,14 @@ async function dumpAllProfiles(type, addProfImg, addBaseUri, timeToWait) {
 async function dumpAlbum(smallSizePhotos, fullSizePhotos, timeToWait) {
   var photos = [];
 	var albumName;
+	var type = 1;
   // Get album name and url
   var albumURL    = document.baseURI;
-	var photosNodes = document.querySelectorAll('[aria-label="Photo album photo"]'); // Some page and group album type
+	var photosNodes = document.querySelectorAll('[role="listitem"]'); // Some page and group album type
+	console.log(photosNodes.length);
 	if (photosNodes.length > 0) {
 		// Get the album name (toDo)
+		type = 2;
   } else {
 		var mainTag      = document.querySelectorAll('[role="main"]');
 		var albumSection = mainTag[0].childNodes[5];
@@ -954,18 +957,21 @@ async function dumpAlbum(smallSizePhotos, fullSizePhotos, timeToWait) {
 	}
 	var newWindow = window.open("", "DumpItBlue processing...", "width=1000,height=600");
 	for (var k = 0; k < photosNodes.length; k++) {
+		if (type == 1 && k == 0) { continue; } // Skip the first image for normal album
 		var photoURL1 = '';
 		var photoImg1 = '';
 		var photoImg2 = '';
-		if (photosNodes.length > 0) {
-  		photoImg1 = photosNodes[k].getElementsByTagName('img')[0].src;
-		  photoURL1 = photosNodes[k].href;
+		if (type == 2) {
+			if (photosNodes[k].getElementsByTagName('img').length > 0) {
+				photoImg1 = photosNodes[k].getElementsByTagName('img')[0].src;
+				photoURL1 = photosNodes[k].getElementsByTagName('a')[0].href;
+			}
 		} else {
 			photoImg1 = photosNodes[k].src;
 			photoURL1 = photosNodes[k].parentNode.href;
 		}
-		console.log('photourl: ' + photoURL1);
 		if (photoURL1) {
+			console.log('photourl: ' + photoURL1);
 			if (fullSizePhotos) {
 				newWindow.opener.log('Open the photo URL - ' + photoURL1);
 				newWindow.location.assign(photoURL1);
@@ -1079,18 +1085,21 @@ async function dumpAllAlbums(smallSizePhotos, fullSizePhotos, timeToWait) {
 			}
 			// Gather small photos data
 			for (var k = 0; k < photosNodes.length; k++) {
+				if (type == 1 && k == 0) { continue; } // Skip the first image for normal album
 				var photoURL1 = '';
 				var photoImg1 = '';
 				var photoImg2 = '';
 				if (type == 2) {
-					photoImg1 = photosNodes[k].getElementsByTagName('img')[0].src;
-					photoURL1 = photosNodes[k].href;
+					if (photosNodes[k].getElementsByTagName('img').length > 0) {
+						photoImg1 = photosNodes[k].getElementsByTagName('img')[0].src;
+						photoURL1 = photosNodes[k].getElementsByTagName('a')[0].href;
+					}
 				} else {
 					photoImg1 = photosNodes[k].src;
 					photoURL1 = photosNodes[k].parentNode.href;
 				}
-				console.log('photourl: ' + photoURL1);
 				if (photoURL1) {
+					console.log('photourl: ' + photoURL1);
 					if (fullSizePhotos) {
 						newWindow.opener.log('Open the photo URL - ' + photoURL1);
 						newWindow.location.assign(photoURL1);
@@ -1155,20 +1164,10 @@ function show_hide() {
   chrome.storage.local.get(null, function(items) {
     // Show/Hide navigation bar bar
 		if (items.REM_BLUEBAR == true) {
-			var selectNode = document.getElementById('ssrb_top_nav_start');
+			var selectNode = document.querySelector('[role="banner"]');
 			if (selectNode) {
-				var topNode = selectNode.parentNode;
-				var childs  = topNode.childNodes;
-				var isNavBarNode = 0;
-				for (var i = (childs.length-1); i > 1; i--) {
-					if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
-						isNavBarNode = 1;
-					}
-					if (isNavBarNode && childs[i].tagName) {
-						if (items.SHOW == 0) { childs[i].style.display = "none";  }
-						else                 { childs[i].style.display = "block"; }
-					}
-				}
+				if (items.SHOW == 0) { selectNode.style.display = "none";  }
+				else                 { selectNode.style.display = "block"; }
 			}
 		}
     // Show/Hide comments
@@ -1204,18 +1203,8 @@ function show_hide() {
 function isolate() {
   chrome.storage.local.get(null, function(items) {
       // Remove navigation bar and menu
-			var selectNode = document.getElementById('ssrb_top_nav_start');
-			if (selectNode) {
-				var topNode = selectNode.parentNode;
-				var childs = topNode.childNodes;
-				var isNavBarNode = 0;
-				for (var i = (childs.length-1); i > 1; i--) {
-					if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
-						isNavBarNode = 1;
-					}
-					if (isNavBarNode) { childs[i].remove(); }
-				}
-			}
+			var selectNode = document.querySelector('[role="banner"]');
+			if (selectNode) { selectNode.remove(); }
       // Posts (People and page)
       if (items.PROF_TYPE === 'posts') {
 				var mainNode = document.querySelector('[role="main"]');
@@ -1233,26 +1222,14 @@ function isolate() {
 				}
       // Group
       } else if (items.PROF_TYPE === 'group') {
-				var selectNode = document.getElementById('ssrb_top_nav_start');
-				if (selectNode) {
-					var topNode = selectNode.parentNode;
-					var childs = topNode.childNodes;
-					var isNavBarNode = 0;
-					for (var i = (childs.length-1); i > 1; i--) {
-						if (childs[i].id && childs[i].id === 'ssrb_top_nav_end') {
-							isNavBarNode = 1;
-						}
-						if (isNavBarNode) { childs[i].remove(); }
-					}
-				}
 				var navMenu = document.querySelector('[role="navigation"]');
 				if (navMenu) { navMenu.remove(); }
-				var mainNode = document.querySelectorAll('[role="main"]')[1];
+				var mainNode = document.querySelectorAll('[role="main"]')[0];
 				var childs   = mainNode.childNodes;
 				for (var i = (childs.length-2); i >= 0; i--) { childs[i].remove(); }
-				childs[0].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].style.display = "none"; // Can't remove, so hide
+				mainNode.childNodes[0].childNodes[2].childNodes[4].childNodes[0].childNodes[0].childNodes[0].style.display = "none"; // Can't remove, so hide
 				// Remove all classes
-				var currentNode = childs[0].childNodes[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0];
+				var currentNode = mainNode.childNodes[0].childNodes[2].childNodes[4].childNodes[0].childNodes[0].childNodes[0];
 				while (!currentNode.id) {
 					currentNode.className = '';
 					currentNode = currentNode.parentNode;
@@ -1277,15 +1254,15 @@ function isolate() {
 			var navMenu = document.querySelector('[role="navigation"]');
 			if (navMenu) { navMenu.remove(); }
 			// Remove right info
-			var mainNode = document.querySelectorAll('[role="main"]')[1];
-			var childs   = mainNode.childNodes[0].childNodes[0].childNodes;
+			var mainNode = document.querySelectorAll('[role="main"]')[0];
+			var childs   = mainNode.childNodes[0].childNodes[0].childNodes[0].childNodes;
 			if (childs[1]) { childs[1].remove(); }
-			if (childs[0].childNodes[0]) { childs[0].childNodes[0].remove(); } // Remove conversation title
+			if (childs[0].childNodes[0]) { childs[0].childNodes[0].childNodes[0].remove(); } // Remove conversation title
 			// Remove bottom
-			var writeBar = document.querySelector('[aria-label="Open more actions"]');
-			if (writeBar) { writeBar.parentNode.parentNode.parentNode.remove(); }
+			var writeBar = document.querySelector('[role="group"]');
+			if (writeBar) { writeBar.parentNode.remove(); }
 			// Remove all classes
-			var currentNode = childs[0].querySelector('[role="none"]').parentNode.parentNode;
+			var currentNode = mainNode.querySelector('[role="grid"]');
 			while (!currentNode.id) {
 				currentNode.className = '';
 				currentNode = currentNode.parentNode;
@@ -1293,15 +1270,9 @@ function isolate() {
 		// Messenger contacts
 		} else if (items.PROF_TYPE === 'messContacts') {
 			// Remove conversation
-			var mainNode = document.querySelectorAll('[role="main"]')[1];
-			if (mainNode) { mainNode.remove(); }
-			var topNode = document.querySelector('[role="navigation"]');
-			var temp = topNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes;
-			temp[3].remove(); // Remove bottom
-			temp[1].remove(); // Remove search box
-			temp[0].remove(); // Remove title
-			// Remove all classes
-			var currentNode = topNode.querySelector('[role="grid"]').childNodes[0].childNodes[0].childNodes[0];
+			var mainNode = document.querySelectorAll('[role="main"]')[0];
+			if (mainNode) { mainNode.parentNode.parentNode.parentNode.parentNode.remove(); }
+			var currentNode = document.querySelector('[role="navigation"]').childNodes[0].childNodes[0];
 			while (!currentNode.id || (currentNode.id && !currentNode.id.match(/mount_0_0/))) {
 				currentNode.className = '';
 				currentNode = currentNode.parentNode;
