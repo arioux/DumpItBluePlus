@@ -383,7 +383,7 @@ function dump() {
 					    friendNode.childNodes[1].childNodes[1].innerText) {
   				  profDetails = friendNode.childNodes[1].childNodes[1].innerText;
 					}
-				} else { // Work category
+				} else { // New 2025
 				  friendNode = friendNode.parentNode;
 					profUrl    = friendNode.parentNode.parentNode.href;
 				  if (friendNode.childNodes[1] && 
@@ -391,9 +391,13 @@ function dump() {
 							friendNode.childNodes[1].childNodes[0].childNodes[0]) {
 						if (friendNode.childNodes[1].childNodes[0].childNodes[0].innerText) {
   				    profName    = friendNode.childNodes[1].childNodes[0].childNodes[0].innerText;
+							if (friendNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0] && 
+							    friendNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href) {
+								profUrl = friendNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].href;
+							}
 						}
-						if (friendNode.childNodes[1].childNodes[0].childNodes[1].innerText) {
-  				    profDetails = friendNode.childNodes[1].childNodes[0].childNodes[1].innerText;
+						if (friendNode.childNodes[1].childNodes[1].childNodes[0] && friendNode.childNodes[1].childNodes[1].childNodes[0].innerText) {
+  				    profDetails = friendNode.childNodes[1].childNodes[1].childNodes[0].innerText;
 						}
 					}
 				}

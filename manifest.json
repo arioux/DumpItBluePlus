@@ -1,6 +1,6 @@
 {
   "name": "DumpItBlue+",
-  "version": "3.2",
+  "version": "3.2.1",
   "description": "DumpItBlue is a tool that helps to dump Facebook stuff for analysis or reporting purposes.",
   "permissions": ["storage"],
   "host_permissions": ["https://*.facebook.com/"],
